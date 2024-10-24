@@ -1,27 +1,102 @@
 <template>
   <v-app>
-    <v-main>
-      <v-container height="100vh" class="inbox-container">
-        <h1 class="text-h4 border-b mb-3 pb-2">Inbox</h1>
-        <div class="inbox-list">
-          <div :key="index" v-for="(item, index) in list" class="inbox-item">
-            <div>
-              <h3>{{ item.subject }}</h3>
+    <WindowFrame>
+      <v-main>
+        <v-dialog
+          transition="dialog-bottom-transition"
+          v-model="createDialog"
+          max-width="700"
+        >
+          <v-card>
+            <div class="px-2">
+              <h1 class="py-1 text-h6 font-wight-black">New</h1>
+
+              <v-text-field
+                label="Subject"
+                variant="outlined"
+                color="primary"
+              ></v-text-field>
+
+              <v-combobox
+                color="primary"
+                label="Priority"
+                :items="[
+                  'Priority 1',
+                  'Priority 2',
+                  'Priority 3',
+                  'Priority 4',
+                ]"
+                variant="outlined"
+              ></v-combobox>
+
+              <v-textarea
+                placeholder="Description"
+                color="primary"
+                variant="outlined"
+              ></v-textarea>
             </div>
-            <div class="inbox-item-actions">
-              <v-btn color="transparent" elevation="0" density="comfortable" icon="mdi-pen"></v-btn>
-              <v-btn color="transparent" elevation="0" density="comfortable" icon="mdi-delete"></v-btn>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                size="large"
+                text="Close"
+                variant="plain"
+                @click="createDialog = false"
+              ></v-btn>
+
+              <v-btn
+                size="large"
+                color="primary"
+                text="Save"
+                variant="tonal"
+                @click="createDialog = false"
+              ></v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <CreateDialog />
+
+        <v-container class="inbox-container">
+          <h1 class="text-h4 border-b mb-3 pb-2">Inbox</h1>
+          <div class="inbox-list">
+            <div :key="index" v-for="(item, index) in list" class="inbox-item">
+              <div>
+                <h3>{{ item.subject }}</h3>
+              </div>
+              <div class="inbox-item-actions">
+                <v-btn
+                  color="transparent"
+                  elevation="0"
+                  density="comfortable"
+                  icon="mdi-pen"
+                  @click="createDialog = true"
+                ></v-btn>
+                <v-btn
+                  color="transparent"
+                  elevation="0"
+                  density="comfortable"
+                  icon="mdi-delete"
+                ></v-btn>
+              </div>
             </div>
           </div>
-        </div>
-      </v-container>
-    </v-main>
+        </v-container>
+      </v-main>
+    </WindowFrame>
   </v-app>
 </template>
 
 <script lang="ts">
+import WindowFrame from "./components/WindowFrame.vue";
+
 export default {
+  components: { WindowFrame },
   data: () => ({
+    createDialog: false,
+
     list: [
       {
         subject: "Meeting Reminder",
@@ -61,6 +136,7 @@ export default {
 <style lang="scss">
 .inbox-container {
   .inbox-list {
+    overflow: scroll;
     .inbox-item {
       padding: 3px 10px;
       width: 100%;
@@ -77,11 +153,12 @@ export default {
         opacity: 0;
       }
 
-      &, .inbox-item-actions {
+      &,
+      .inbox-item-actions {
         transition: 0.3s ease;
       }
 
-      &:hover  {
+      &:hover {
         background-color: rgba(var(--v-border-color), 0.05);
         .inbox-item-actions {
           opacity: 1 !important;

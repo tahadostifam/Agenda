@@ -1,3 +1,15 @@
 * {
   user-select: none !important; 
 }
+
+$titlebar_radius: 9px;
+
+html, #app, .v-application {
+    overflow: hidden !important;
+    border-radius: $titlebar_radius !important;
+}
+
+.titlebar {
+    border-top-left-radius: $titlebar_radius;
+    border-top-right-radius: $titlebar_radius;
+}
