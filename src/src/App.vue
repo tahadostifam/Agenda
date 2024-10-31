@@ -7,60 +7,60 @@
           v-model="createDialog"
           max-width="700"
         >
-          <v-card>
-            <div class="px-2">
-              <h1 class="py-1 text-h6 font-wight-black">New</h1>
+          <v-card class="pa-3">
+            <h1 class="text-h6">Add</h1>
+            
+            <v-text-field
+              color="primary"
+              label="Subject"
+              variant="underlined"
+            ></v-text-field>
+            <v-textarea
+              color="primary"
+              label="Context"
+              variant="underlined"
+            ></v-textarea>
 
-              <v-text-field
-                label="Subject"
-                variant="outlined"
-                color="primary"
-              ></v-text-field>
-
-              <v-combobox
-                color="primary"
-                label="Priority"
-                :items="[
-                  'Priority 1',
-                  'Priority 2',
-                  'Priority 3',
-                  'Priority 4',
-                ]"
-                variant="outlined"
-              ></v-combobox>
-
-              <v-textarea
-                placeholder="Description"
-                color="primary"
-                variant="outlined"
-              ></v-textarea>
-            </div>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-
+            <v-row class="pa-3">
               <v-btn
+                block
                 size="large"
                 text="Close"
                 variant="plain"
                 @click="createDialog = false"
+                class="mb-1"
               ></v-btn>
 
               <v-btn
+                block
                 size="large"
                 color="primary"
                 text="Save"
                 variant="tonal"
                 @click="createDialog = false"
               ></v-btn>
-            </v-card-actions>
+            </v-row>
           </v-card>
         </v-dialog>
 
         <CreateDialog />
 
         <v-container class="inbox-container">
-          <h1 class="text-h4 border-b mb-3 pb-2">Inbox</h1>
+          <div
+            class="d-flex flex-row justify-space-between"
+            style="width: 100%"
+          >
+            <h1 class="text-h4 mb-3 pb-2 pl-2" style="width: 100%">Inbox</h1>
+            <v-btn
+              color="transparent"
+              elevation="0"
+              density="comfortable"
+              icon="mdi-plus"
+              @click="createDialog = true"
+            >
+            </v-btn>
+          </div>
+
           <div class="inbox-list">
             <div :key="index" v-for="(item, index) in list" class="inbox-item">
               <div>
