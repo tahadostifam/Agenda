@@ -1,0 +1,7 @@
+-- Your SQL goes here
+
+CREATE TABLE todos (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  subject VARCHAR NOT NULL,
+  context TEXT NOT NULL
+)

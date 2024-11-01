@@ -9,13 +9,15 @@
         >
           <v-card class="pa-3">
             <h1 class="text-h6">Add</h1>
-            
+
             <v-text-field
+              v-model="subjectInput"
               color="primary"
               label="Subject"
               variant="underlined"
             ></v-text-field>
             <v-textarea
+              v-model="contextInput"
               color="primary"
               label="Context"
               variant="underlined"
@@ -37,13 +39,11 @@
                 color="primary"
                 text="Save"
                 variant="tonal"
-                @click="createDialog = false"
+                @click="add_todo()"
               ></v-btn>
             </v-row>
           </v-card>
         </v-dialog>
-
-        <CreateDialog />
 
         <v-container class="inbox-container">
           <div
@@ -61,7 +61,7 @@
             </v-btn>
           </div>
 
-          <div class="inbox-list">
+          <div v-if="list.length > 0" class="inbox-list">
             <div :key="index" v-for="(item, index) in list" class="inbox-item">
               <div>
                 <h3>{{ item.subject }}</h3>
@@ -79,9 +79,13 @@
                   elevation="0"
                   density="comfortable"
                   icon="mdi-delete"
+                  @click="remove_todo(item.id)"
                 ></v-btn>
               </div>
             </div>
+          </div>
+          <div v-else>
+            <span class="pl-3">No todos for now :)</span>
           </div>
         </v-container>
       </v-main>
@@ -91,44 +95,51 @@
 
 <script lang="ts">
 import WindowFrame from "./components/WindowFrame.vue";
+import { invoke } from "@tauri-apps/api/core";
+import { Todo } from "./models/Todo";
 
 export default {
   components: { WindowFrame },
+  mounted() {
+    this.load_todos();
+  },
+  methods: {
+    load_todos() {
+      invoke("load_todos").then((list) => {
+        this.$data.list = list as any;
+      });
+    },
+    add_todo() {
+      if (
+        this.$data.subjectInput.trim().length > 0 &&
+        this.$data.contextInput.trim().length > 0
+      ) {
+        invoke("add_todo", {
+          subj: this.$data.subjectInput.trim(),
+          contx: this.$data.contextInput.trim(),
+        }).then((todo) => {
+          this.$data.list.push(todo as Todo);
+          this.clear_add_inputs();
+        });
+        this.createDialog = false;
+      }
+    },
+    remove_todo(id: number) {
+      invoke("remove_todo", { id }).then(() => {
+        this.$data.list = this.$data.list.filter((item) => item.id !== id);
+      });
+    },
+    clear_add_inputs() {
+      this.$data.subjectInput = "";
+      this.$data.contextInput = "";
+    },
+  },
   data: () => ({
     createDialog: false,
+    subjectInput: "",
+    contextInput: "",
 
-    list: [
-      {
-        subject: "Meeting Reminder",
-        description:
-          "Adipisicing ut cillum reprehenderit magna tempor culpa et. Cillum cillum irure do enim mollit ea aute quis veniam. Quis incididunt magna aliqua est quis amet consequat pariatur ipsum minim ullamco. Nisi consequat laboris sunt ea irure elit pariatur occaecat nulla.",
-        completed: false,
-      },
-      {
-        subject: "Meeting Reminder",
-        description:
-          "Adipisicing ut cillum reprehenderit magna tempor culpa et. Cillum cillum irure do enim mollit ea aute quis veniam. Quis incididunt magna aliqua est quis amet consequat pariatur ipsum minim ullamco. Nisi consequat laboris sunt ea irure elit pariatur occaecat nulla.",
-        completed: false,
-      },
-      {
-        subject: "Meeting Reminder",
-        description:
-          "Adipisicing ut cillum reprehenderit magna tempor culpa et. Cillum cillum irure do enim mollit ea aute quis veniam. Quis incididunt magna aliqua est quis amet consequat pariatur ipsum minim ullamco. Nisi consequat laboris sunt ea irure elit pariatur occaecat nulla.",
-        completed: false,
-      },
-      {
-        subject: "Meeting Reminder",
-        description:
-          "Adipisicing ut cillum reprehenderit magna tempor culpa et. Cillum cillum irure do enim mollit ea aute quis veniam. Quis incididunt magna aliqua est quis amet consequat pariatur ipsum minim ullamco. Nisi consequat laboris sunt ea irure elit pariatur occaecat nulla.",
-        completed: false,
-      },
-      {
-        subject: "Meeting Reminder",
-        description:
-          "Adipisicing ut cillum reprehenderit magna tempor culpa et. Cillum cillum irure do enim mollit ea aute quis veniam. Quis incididunt magna aliqua est quis amet consequat pariatur ipsum minim ullamco. Nisi consequat laboris sunt ea irure elit pariatur occaecat nulla.",
-        completed: false,
-      },
-    ],
+    list: [] as Todo[],
   }),
 };
 </script>
